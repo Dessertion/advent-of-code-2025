@@ -5,7 +5,7 @@ import AdventOfCode2025.Util
 namespace D1
 
 private
-def test_list : List Int64 := [-82, 14, -99, -1, -55, 60, -5, 48, -30, -68]
+def test_list : List Int := [-82, 14, -99, -1, -55, 60, -5, 48, -30, -68]
 
 /--
 take the input and convert it into a list of +s and -s; e.g.:
@@ -27,8 +27,8 @@ should be converted into:
 def parser (input : String) := Id.run do
   -- first, split the input by '\n'
   let inputList : List String := input.splitToList (. == '\n')
-  let parse (s : String) : Int64 :=
-    let num := (s.drop 1).toNat! |> Int64.ofNat
+  let parse (s : String) : Int :=
+    let num := (s.drop 1).toNat! |> Int.ofNat
     if s.toList[0]! == 'L' then
       -num
     else
@@ -53,9 +53,9 @@ L82"
 
 namespace PartOne
 
-def work (l : List Int64) :=
-  let l' : List Int64 :=
-    (l.mapAccumr (fun a b ↦ ⟨a + b, a + b⟩) (Int64.ofNat 50)).2
+def work (l : List Int) :=
+  let l' : List Int :=
+    (l.mapAccumr (fun a b ↦ ⟨a + b, a + b⟩) 50).2
   let l'' := l'.map (fun a ↦ a % 100)
   (l''.count ↑0)
 #eval work test_list
@@ -104,9 +104,9 @@ before returning back to 50!
 -/
 
 
-#eval
-  let hmm := fun n ↦ -(-n % 100)
-  hmm (-105)
+-- #eval
+--   let hmm := fun n ↦ -(-n % 100)
+--   hmm (-105)
 
 /-
 Solution to Part 2:
@@ -120,24 +120,24 @@ Solution to Part 2:
     just special case it out for now, lol.
 -/
 
-def work (l : List Int64) :=
+def work (l : List Int) :=
   -- List.mapAccumr (f : α → γ → γ × β) : List α → γ → γ × List β
   -- f : (next : α) → (cur : γ) → (newCur : γ) × (mapResult : β)
   let diag {α} : α → α × α := fun a ↦ (a, a)
 
-  let red : Int64 → Int64 × Int64 → (Int64 × Int64) × (Int64 × Int64)
+  let red : Int → (Int × Int) → (Int × Int) × (Int × Int)
     | next, (cur, ret) =>
-      let ret := ret + (Int64.abs next)/100
-      let next := next % 100
+      let ret := ret + (Int.natAbs next)/100
+      let next := next.tmod 100
       if next == 0 then
         diag (cur, ret)
       else
         let sum := cur + next
         let add :=
           if sum ≥ 100 || (cur != 0 && sum ≤ 0) then 1 else 0
-        diag ((sum + 100) % 100, ret + add)
-  let ((_, ret), _) := l.mapAccumr red (Int64.ofNat 50, Int64.ofNat 0)
-  ret
+        diag (sum % 100, ret + add)
+  let (ret, _) := l.mapAccumr red (50, 0)
+  ret.2
 
 #eval solve parser work test_string
 -- #eval test_list.reverse
