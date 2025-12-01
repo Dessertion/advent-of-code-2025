@@ -1,4 +1,5 @@
 import Mathlib.Data.List.Defs
+import Mathlib.Order.Interval.Set.Basic
 
 import AdventOfCode2025.Util
 
@@ -125,6 +126,13 @@ def work (l : List Int) :=
   -- f : (next : α) → (cur : γ) → (newCur : γ) × (mapResult : β)
   let diag {α} : α → α × α := fun a ↦ (a, a)
 
+  -- the prop valued version seems to be about equally performant
+  let crossed old new : Prop :=
+    0 ∈ Set.Ico new old ∨ 100 ∈ Set.Ioc old new
+  -- let crossed old new : Bool :=
+  --   ((new ≤ 0 && 0 < old) || (old < 100 && 100 ≤ new))
+
+
   let red : Int → (Int × Int) → (Int × Int) × (Int × Int)
     | next, (cur, ret) =>
       let ret := ret + (Int.natAbs next)/100
@@ -134,7 +142,7 @@ def work (l : List Int) :=
       else
         let sum := cur + next
         let add :=
-          if sum ≥ 100 || (cur != 0 && sum ≤ 0) then 1 else 0
+          if crossed cur sum then 1 else 0
         diag (sum % 100, ret + add)
   let (ret, _) := l.mapAccumr red (50, 0)
   ret.2
