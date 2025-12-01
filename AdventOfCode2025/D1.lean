@@ -26,7 +26,7 @@ should be converted into:
 -/
 def parser (input : String) := Id.run do
   -- first, split the input by '\n'
-  let inputList : List String := input.splitToList (. == '\n')
+  let inputList : List String := input.splitToList (·.isWhitespace)
   let parse (s : String) : Int :=
     let num := (s.drop 1).toNat! |> Int.ofNat
     if s.toList[0]! == 'L' then
@@ -145,5 +145,7 @@ def work (l : List Int) :=
 -- #eval (-64/100)
 
 -- final answer: 6412
+def owo : ℕ := 5
+#eval eval_string "solve parser work test_string"
 
 end PartTwo
