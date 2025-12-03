@@ -37,9 +37,7 @@ def work₁ (l : List ℕ) : ℕ :=
     let x₁ ← l.dropLast.max?
     let x₂ ← l.drop (l.idxOf x₁ + 1) |> List.max?
     x₁ * 10 + x₂
-  Id.run do
-    let some answer := inner | unreachable!
-    answer
+  inner.get!
 
 #eval solve parser (work_helper work₁) testString
 #eval printAnswer work₁
@@ -69,9 +67,10 @@ def work₂ (num_needed : ℕ) (l : List ℕ) :=
     | [] => 0
     | x :: xs => x + 10 * reify xs
 
-  Id.run do
-    let some answer := helper 12 l | unreachable!
-    answer.reverse |> reify
+  helper 12 l |>.get! |>.reverse |> reify
+  -- Id.run do
+  --   let some answer := helper 12 l | unreachable!
+  --   answer.reverse |> reify
 
 #eval work₂ 12 testList[0]!
 #eval solve parser (work_helper $ work₂ 12) testString
