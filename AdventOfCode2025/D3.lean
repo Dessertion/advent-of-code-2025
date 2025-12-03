@@ -33,14 +33,13 @@ def work₁ (l : List ℕ) : ℕ :=
   -- get the largest digit which occurs (and is not the last digit),
   -- then get the largest digit which occurs after the index where the largest digit occurs.
   -- for each digit, get the first occurrence in the list (if it exists)
-  if let some x₁ := l.dropLast.max? then
-    let x₁_idx : ℕ := l.idxOf x₁
-    if let some x₂ := l.drop (x₁_idx + 1) |> List.max? then
-      x₁ * 10 + x₂
-    else unreachable!
-  else
-    unreachable!
-
+  let inner : Option ℕ := do
+    let x₁ ← l.dropLast.max?
+    let x₂ ← l.drop (l.idxOf x₁ + 1) |> List.max?
+    x₁ * 10 + x₂
+  Id.run do
+    let some answer := inner | unreachable!
+    answer
 
 #eval solve parser (work_helper work₁) testString
 #eval printAnswer work₁
@@ -70,9 +69,9 @@ def work₂ (num_needed : ℕ) (l : List ℕ) :=
     | [] => 0
     | x :: xs => x + 10 * reify xs
 
-  match helper 12 l with
-  | some answer => answer.reverse |> reify
-  | none => unreachable!
+  Id.run do
+    let some answer := helper 12 l | unreachable!
+    answer.reverse |> reify
 
 #eval work₂ 12 testList[0]!
 #eval solve parser (work_helper $ work₂ 12) testString
