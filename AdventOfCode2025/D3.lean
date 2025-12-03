@@ -50,7 +50,7 @@ unsafe def work₁ (l : List ℕ) : ℕ :=
 -- instead of length-two subsequence, we need a length-12 subsequence
 #eval List.range' 1 9 |>.reverse
 
-unsafe def work₂ (l : List ℕ) :=
+def work₂ (l : List ℕ) :=
   -- note, each line is length 100
   -- probably want a recursive solution
 
@@ -63,6 +63,9 @@ unsafe def work₂ (l : List ℕ) :=
     let f (i : ℕ) : Option (List ℕ) := do
       i :: (← helper (num_needed - 1) $ l.drop ((← l.idxOf? i) + 1))
     List.range' 1 9 |>.reverse |>.firstM f
+  termination_by l.length
+  decreasing_by simp_all; omega
+
   let rec reify : List ℕ → ℕ
     | [] => 0
     | x :: xs => x + 10 * reify xs
