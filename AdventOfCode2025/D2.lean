@@ -1,4 +1,3 @@
-import Mathlib.Tactic
 import AdventOfCode2025.Util
 
 namespace D2
