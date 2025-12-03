@@ -29,7 +29,7 @@ def printAnswer (w : List ℕ → ℕ) : IO Unit := do
 -- for each line, find the length-two subsequence which the maximum value when concatted
 -- as a string and read as a nat, then sum it all up
 
-unsafe def work₁ (l : List ℕ) : ℕ :=
+def work₁ (l : List ℕ) : ℕ :=
   -- get the largest digit which occurs (and is not the last digit),
   -- then get the largest digit which occurs after the index where the largest digit occurs.
   -- for each digit, get the first occurrence in the list (if it exists)
@@ -37,9 +37,9 @@ unsafe def work₁ (l : List ℕ) : ℕ :=
     let x₁_idx : ℕ := l.idxOf x₁
     if let some x₂ := l.drop (x₁_idx + 1) |> List.max? then
       x₁ * 10 + x₂
-    else lcUnreachable
+    else unreachable!
   else
-    lcUnreachable
+    unreachable!
 
 
 #eval solve parser (work_helper work₁) testString
@@ -50,7 +50,7 @@ unsafe def work₁ (l : List ℕ) : ℕ :=
 -- instead of length-two subsequence, we need a length-12 subsequence
 #eval List.range' 1 9 |>.reverse
 
-def work₂ (l : List ℕ) :=
+def work₂ (num_needed : ℕ) (l : List ℕ) :=
   -- note, each line is length 100
   -- probably want a recursive solution
 
@@ -72,9 +72,11 @@ def work₂ (l : List ℕ) :=
 
   match helper 12 l with
   | some answer => answer.reverse |> reify
-  | none => panic! "impossible"
+  | none => unreachable!
 
-#eval work₂ testList[0]!
-#eval solve parser (work_helper work₂) testString
-#eval printAnswer work₂
+#eval work₂ 12 testList[0]!
+#eval solve parser (work_helper $ work₂ 12) testString
+#eval printAnswer $ work₂ 12
 -- 168027167146027
+
+#eval List.replicate 5 [1,2,3] |>.flatten
